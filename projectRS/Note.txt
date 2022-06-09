@@ -1,0 +1,3 @@
+Pour activer l'env env\Scripts\activate 🎵🎨😂❤🔠
+
+ #after any changes: python manage.py makemigrations //// python manage.py migrate
