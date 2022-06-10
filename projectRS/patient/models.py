@@ -1,9 +1,15 @@
+from logging import WARN
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.conf import settings
 import os
 
+
+class Wilaya(models.Model):
+    WilayaName = models.CharField(max_length=50,blank=True)
+    def __str__(self):
+        return self.WilayaName
 # Create your models here.
 class Patient(models.Model):  
     GENDER=(
@@ -15,13 +21,15 @@ class Patient(models.Model):
     numTel=models.IntegerField(null=True,blank=True)
     gender = models.CharField(max_length=10,blank=False,choices=GENDER,default='male ')
     med_history = models.TextField(max_length=800, blank=True)
-    Wilaya = models.CharField(max_length=30, blank=True)
+    Wilaya = models.ForeignKey(Wilaya, blank=True, null=True, on_delete=models.CASCADE)
     poids = models.IntegerField(null=False,blank=False)
     taille = models.IntegerField(null=False,blank=False)
     preg = models.BooleanField(null=False,blank=False, default=0)
 
     def __str__(self):
         return self.user.username 
+
+
 
 class ListDrug(models.Model):
     drugName = models.CharField(max_length=50,blank=True)

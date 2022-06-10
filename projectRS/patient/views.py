@@ -3,14 +3,14 @@ from django.http import HttpResponse
 from django.shortcuts import render
 #from django.urls import path 
 from datetime import datetime
-from .forms import PatientForm,Reviewform 
+from .forms import PatientForm,Reviewform,CreateUserForm
 from .models import Review,PatientSideEffect,Patient
 
 
 #def index(request):
 #   return render(request, 'reviewForm.html')
 
-def reviewForm(request):
+def review(request):
     #form = Reviewform()
 
     if request.method == 'POST': 
@@ -31,7 +31,7 @@ def reviewForm(request):
     context = {'formR':formR}
     return render(request, 'reviewForm.html',context)
 
-def patientForm(request):
+def patient(request):
     
     #P_form=PatientForm()
     if request.method == 'POST':
@@ -56,3 +56,45 @@ def patientForm(request):
     context = {'P_form':P_form}
 
     return render(request,'PatientForm.html',context)
+
+
+
+def profile(request):
+
+    if request.method == 'POST':
+        form=CreateUserForm(request.POST)
+        profile_form = PatientForm(request.POST)
+
+        if form.is_valid() and profile_form.is_valid():
+            user = form.save()
+            #user.save_m2m() #maybe this is the error
+
+            profile = profile_form.save(commit=False)
+            profile.user=user
+
+            user.med_history = profile_form.cleaned_data.get('med_history')
+            user.numTel = profile_form.cleaned_data.get('numTel')
+            user.gender = profile_form.cleaned_data.get('gender')
+            user.Wilaya = profile_form.cleaned_data.get('Wilaya')
+            user.poids = profile_form.cleaned_data.get('poids')
+            user.taille = profile_form.cleaned_data.get('taille')
+            user.birth_date = profile_form.cleaned_data.get('birth_date')
+            user.preg = profile_form.cleaned_data.get('preg')
+            profile.save()
+
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username,password=password)
+            login(request, user)
+
+            print('user created')
+            messages.add_message(request, messages.SUCCESS , "You have Registered successfully" )
+            #return redirect('home:home')
+    else:
+        form=CreateUserForm()
+        profile_form = PatientForm()
+            
+            
+            
+    context = {'form' : form, 'profile_form' : profile_form }
+    return render(request, 'profile.html', context) 
